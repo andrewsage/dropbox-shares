@@ -1,4 +1,5 @@
 # Dropbox Shares
+# Andrew Sage (@symboticaandrew) 5/1/19
 
 #!/usr/bin/env ruby
 require 'net/http'
@@ -138,7 +139,7 @@ class SharedFolders
 		options.editor = false
 		options.viewer = false
 		options.unmounted = false
-		options.mounted = true
+		options.mounted = false
 		options.verbose = false
 
 		opt_parser = OptionParser.new do |opts|
@@ -172,7 +173,7 @@ class SharedFolders
 				options.mounted = m
 			end
 
-			opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
+			opts.on("--[no-]verbose", "Run verbosely") do |v|
         options.verbose = v
       end
 
@@ -188,12 +189,22 @@ class SharedFolders
 		end
 
 		opt_parser.parse!(args)
+
+		if options.editor == false && options.viewer == false && options.owner == false
+			options.editor = true
+			options.viewer = true
+			options.owner = true
+		end
+		if options.mounted == false && options.unmounted == false
+			options.mounted = true
+			options.unmounted = true
+		end
+		
 		options
 	end
 end
 
 options = SharedFolders.parse(ARGV)
-pp options
 
 sf = SharedFolders.new(ENV['DROPBOX_ACCESS_TOKEN'])
 sf.list_folders(options)
